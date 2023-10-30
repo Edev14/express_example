@@ -1,32 +1,23 @@
 # express_example
 
-## Requirements
+Branches will have various databases and dependencies installed for the given database type
 
-- MongoDB installed
-- NodeJS installed
+## Branches
 
-## Installation
-
-- In the "express_example" main directory, to install dependencies:
+- MongoDB:
 
 ```code
-npm i
+git clone -b mongodb --single-branch https://github.com/Edev14/express_example.git
 ```
 
-- To adjust the database please adjust in "/config/connection.js" AND "/utils/session-service.js" to the corresponding desired database
-
-## Usage
-
-Default port: 3000
-
-- In the "express_example" main directory, to start the server:
+- MySQL:
 
 ```code
-npm start
+git clone -b mysql --single-branch https://github.com/Edev14/express_example.git
 ```
 
-- In the "express_example" main directory, to seed the database from JSON file:
+- Postgres
 
 ```code
-node seeds
+git clone -b postgres --single-branch https://github.com/Edev14/express_example.git
 ```
