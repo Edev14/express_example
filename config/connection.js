@@ -4,9 +4,11 @@ require('dotenv').config();
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   
     host: process.env.DB_HOST,
-    dialect: 'mysql',
-    port: 3306,
+    dialect: 'postgres',
+    port: 5432,
     logging: false,
+    // below gets disabled if testing using localhost
+    // dialectOptions: { ssl: { rejectUnauthorized: false } }
 
 });
 

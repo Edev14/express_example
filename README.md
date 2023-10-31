@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- MySQL installed
+- Postgres installed
 - NodeJS installed
 
 ## Installation
