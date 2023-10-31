@@ -4,7 +4,7 @@ const userController = {
 
     getUsers(req, res) {
 
-        User.find({}).lean()
+        User.findAll({ raw: true })
             .then(data => res.json(data))
             .catch(err => res.json(err))
 
@@ -12,7 +12,7 @@ const userController = {
 
     getUserById({ params }, res) {
 
-        User.findOne({ _id: params.id }).lean()
+        User.findOne({ raw: true, where: { id: params.id } })
             .then(data => res.json(data))
             .catch(err => res.json(err))
 
@@ -28,7 +28,7 @@ const userController = {
 
     deleteUser({ params }, res) {
 
-        User.deleteOne({ _id: params.id })
+        User.destroy({ where: { id: params.id } })
             .then(data => res.json(data))
             .catch(err => res.json(err))
 
@@ -36,13 +36,13 @@ const userController = {
 
     loginUser(req, res) {
 
-        User.findOne({ email: req.body.email })
+        User.findOne({ where: { email: req.body.email } })
 
         .then(data => {
 
             if (!data) { res.status(404).json({ message: 'No user found...' }); return; }
 
-            const validPassword = data.validatePassword(req.body.password);
+            const validPassword = data.checkPassword(req.body.password);
             if (!validPassword) { res.status(400).json({ message: 'Incorrect credentials...' }); return; }
 
             req.session.save(() => {
@@ -52,7 +52,7 @@ const userController = {
                 req.session.email = data.email;
                 req.session.loggedIn = true;
         
-                res.json({ user: data, message: ` ${data.username}is now logged in...` });
+                res.json({ user: data, message: ` ${data.username} is now logged in...` });
 
             });
 

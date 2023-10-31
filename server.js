@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
+const sequelize = require('./config/connection');
 const session = require('express-session');
 
-const connect = require('./config/connection');
 const sess = require('./utils/session-service');
 
 const app = express();
@@ -19,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', express.static(path.join('public')));
 app.use(require('./routes'));
 
-connect()
+sequelize
+    .sync()
+    .then(() => console.log('- - - Connection has been established successfully...'))
     .then(() => app.listen(PORT, () => console.log(`- - - Express server listening on port: ${PORT}`)))
-    .catch((err) => console.log(err))
+    .catch((error) => console.log({"error": "Failed to start server", "message" : error }))

@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- MongoDB installed
+- MySQL installed
 - NodeJS installed
 
 ## Installation
@@ -13,7 +13,7 @@
 npm i
 ```
 
-- To adjust the database please adjust in "/config/connection.js" AND "/utils/session-service.js" to the corresponding desired database
+- To adjust the database please adjust in .env.EXAMPLE and rename to .env
 
 ## Usage
 

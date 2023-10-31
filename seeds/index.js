@@ -1,9 +1,6 @@
 const fs = require('fs');
-const mongoose = require('mongoose');
-const connect = require('../config/connection');
-const { User } = require('../models')
-const bcrypt = require('bcrypt');
-const SALT_WORK_FACTOR = 10;
+const sequelize = require('../config/connection');
+const { User } = require('../models');
 
 let users;
 
@@ -23,34 +20,18 @@ const initialize = () => {
     })
     
 }
-
-const hashPassword = async (password) => { return bcrypt.hash(password, SALT_WORK_FACTOR); };
   
-const seedUsers = async () => {
-
-    await User.deleteMany({});
-
-    const users_hash = await Promise.all(
-
-        users.map(async (user) => {
-            const hashedPassword = await hashPassword(user.password);
-            return { ...user, password: hashedPassword };
-        })
-
-    );
-  
-    await User.insertMany(users_hash);
-
-}
+const seedUsers = () => User.bulkCreate(users, { individualHooks: true });
 
 const seedData = async () => {
 
+    await sequelize.sync({ force: true });
     await seedUsers();
-    console.log("- - - Seeded User Data from JSON - - -");
+
+    console.log('- - - DATA SEEDED from JSON');
 
 }
 
-connect()
-    .then(() => initialize())
+initialize()
     .then(() => seedData())
-    .then(() => mongoose.connection.close())
+    .then(() => process.exit())

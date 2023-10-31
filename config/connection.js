@@ -1,20 +1,13 @@
-const mongoose = require('mongoose');
+const Sequelize = require('sequelize');
+require('dotenv').config();
 
-const connect = () => {
-    
-    return new Promise((resolve, reject) => {
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    port: 3306,
+    logging: false,
 
-        mongoose.connect('mongodb://localhost:27017/express_example_mongo', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+});
 
-        mongoose.set('debug', false);
-
-        resolve(console.log("- - - MongoDB connection successful..."));
-
-    })
-
-}
-
-module.exports = connect;
+module.exports = sequelize;

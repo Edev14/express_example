@@ -1,59 +1,62 @@
-const { Schema, model, Types } = require('mongoose');
+const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
-const SALT_WORK_FACTOR = 10;
+const sequelize = require('../config/connection');
 
-const { isEmailValid } = require('../utils/helpers');
+class User extends Model { checkPassword(loginPw) { return bcrypt.compareSync(loginPw, this.password); } }
 
-const UserSchema = new Schema(
-    
+User.init(
     {
 
+        id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            primaryKey: true,
+            autoIncrement: true
+        },
+
         username: {
-            type: String,
-            required: 'Username is Required',
-            trim: true,
-            unique: true
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         email: {
-            type: String,
-            required: 'E-mail is Required',
-            trim: true,
-            validate: [ isEmailValid, 'E-mail is not valid.' ],
-            unique: true
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+            validate: { isEmail: true }
         },
-        
+
         password: {
-            type: String,
-            required: 'Password is Required',
-        },
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: { len: [4] }
+        }
 
     },
 
     {
-        toJSON: {
-            virtuals: true,
-            getters: true
+
+        hooks: {
+
+            async beforeCreate(newUserData) {
+                newUserData.password = await bcrypt.hash(newUserData.password, 10);
+                return newUserData;
+            },
+
+            async beforeUpdate(updatedUserData) {
+                updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+                return updatedUserData;
+            }
+
         },
+
+        sequelize,
+        timestamps: false,
+        freezeTableName: true,
+        underscored: true,
+        modelName: 'user'
+
     }
-
 );
-
-UserSchema.pre('save', async function save(next) {
-
-    if (!this.isModified('password')) return next();
-
-    try {
-
-        const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-        this.password = await bcrypt.hash(this.password, salt);
-        return next();
-
-    } catch (err) { return next(err); }
-
-});
-
-UserSchema.methods.validatePassword = function validatePassword(data) { return bcrypt.compareSync(data, this.password) };
-const User = model('User', UserSchema);
 
 module.exports = User;
